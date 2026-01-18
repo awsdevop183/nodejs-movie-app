@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🎬 Movies App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #e94560, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #8b9dc3;
+            font-size: 1.1rem;
+        }
+
+        /* Status Badge */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .connected {
+            background: rgba(46, 213, 115, 0.15);
+            border: 1px solid rgba(46, 213, 115, 0.3);
+        }
+
+        .connected .status-dot {
+            background: #2ed573;
+            box-shadow: 0 0 10px #2ed573;
+        }
+
+        .error {
+            background: rgba(255, 71, 87, 0.15);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        .error .status-dot {
+            background: #ff4757;
+            box-shadow: 0 0 10px #ff4757;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Add Movie Form */
+        .add-form {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .add-form h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #feca57;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-row input {
+            flex: 1;
+            min-width: 150px;
+            padding: 14px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-row input:focus {
+            outline: none;
+            border-color: #e94560;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .form-row input::placeholder {
+            color: #8b9dc3;
+        }
+
+        .btn-add {
+            padding: 14px 35px;
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
+        }
+
+        /* Movies Grid */
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .movie-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(233, 69, 96, 0.3);
+        }
+
+        .movie-poster {
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .movie-poster::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.8;
+        }
+
+        .genre-action .movie-poster::before { background: linear-gradient(135deg, #e94560, #ff6b6b); }
+        .genre-scifi .movie-poster::before { background: linear-gradient(135deg, #5f27cd, #a55eea); }
+        .genre-romance .movie-poster::before { background: linear-gradient(135deg, #ff6b81, #ff9ff3); }
+        .genre-drama .movie-poster::before { background: linear-gradient(135deg, #576574, #8395a7); }
+        .genre-comedy .movie-poster::before { background: linear-gradient(135deg, #feca57, #ff9f43); }
+        .genre-horror .movie-poster::before { background: linear-gradient(135deg, #2d3436, #636e72); }
+        .genre-thriller .movie-poster::before { background: linear-gradient(135deg, #0c2461, #1e3799); }
+
+        .movie-poster span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .movie-info {
+            padding: 20px;
+        }
+
+        .movie-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .movie-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .tag-genre {
+            background: rgba(233, 69, 96, 0.2);
+            color: #ff6b6b;
+        }
+
+        .tag-year {
+            background: rgba(254, 202, 87, 0.2);
+            color: #feca57;
+        }
+
+        .tag-rating {
+            background: rgba(46, 213, 115, 0.2);
+            color: #2ed573;
+        }
+
+        .btn-delete {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            border-radius: 10px;
+            color: #ff4757;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-delete:hover {
+            background: #ff4757;
+            color: #fff;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8b9dc3;
+        }
+
+        .empty-state span {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #8b9dc3;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #e94560;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Architecture Info */
+        .architecture {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .architecture h4 {
+            color: #8b9dc3;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .arch-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .arch-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .arch-box .icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .arch-box .label {
+            font-size: 0.85rem;
+            color: #8b9dc3;
+        }
+
+        .arch-arrow {
+            color: #e94560;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 Movies Database</h1>
+            <p>DevOps Demo - Two Server Architecture</p>
+            <div id="status" class="status">
+                <span class="status-dot"></span>
+                <span>Connecting...</span>
+            </div>
+        </header>
+
+        <div class="add-form">
+            <h3>➕ Add New Movie</h3>
+            <div class="form-row">
+                <input type="text" id="title" placeholder="Movie Title">
+                <input type="text" id="genre" placeholder="Genre">
+                <input type="number" id="year" placeholder="Year">
+                <input type="number" id="rating" placeholder="Rating" step="0.1" min="0" max="10">
+                <button class="btn-add" onclick="addMovie()">Add Movie</button>
+            </div>
+        </div>
+
+        <div id="movies-container">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading movies from database...</p>
+            </div>
+        </div>
+
+        <div class="architecture">
+            <h4>📐 Architecture</h4>
+            <div class="arch-flow">
+                <div class="arch-box">
+                    <div class="icon">🌐</div>
+                    <div class="label">Browser</div>
+                </div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-box">
+                    <div class="icon">⚙️</div>
+                    <div class="label">App Server<br><small>Node.js :3000</small></div>
+                </div>
+                <div class="arch-arrow">→</div>
+                <div class="arch-box">
+                    <div class="icon">🗄️</div>
+                    <div class="label">DB Server<br><small>MySQL :3306</small></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        loadMovies();
+
+        async function loadMovies() {
+            try {
+                const res = await fetch('/api/movies');
+                const movies = await res.json();
+
+                document.getElementById('status').className = 'status connected';
+                document.getElementById('status').innerHTML = '<span class="status-dot"></span><span>✓ Connected to Database</span>';
+
+                const container = document.getElementById('movies-container');
+                
+                if (movies.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><span>🎬</span><p>No movies yet. Add your first movie above!</p></div>';
+                    return;
+                }
+
+                container.innerHTML = '<div class="movies-grid">' + movies.map(movie => {
+                    const genreClass = 'genre-' + (movie.genre || 'drama').toLowerCase().replace(/[^a-z]/g, '');
+                    const genreEmoji = getGenreEmoji(movie.genre);
+                    
+                    return '<div class="movie-card ' + genreClass + '">' +
+                        '<div class="movie-poster"><span>' + genreEmoji + '</span></div>' +
+                        '<div class="movie-info">' +
+                            '<h3 class="movie-title">' + movie.title + '</h3>' +
+                            '<div class="movie-meta">' +
+                                '<span class="tag tag-genre">' + (movie.genre || 'Unknown') + '</span>' +
+                                '<span class="tag tag-year">' + (movie.year || 'N/A') + '</span>' +
+                                '<span class="tag tag-rating">⭐ ' + (movie.rating || '0') + '</span>' +
+                            '</div>' +
+                            '<button class="btn-delete" onclick="deleteMovie(' + movie.id + ')">🗑️ Delete</button>' +
+                        '</div>' +
+                    '</div>';
+                }).join('') + '</div>';
+
+            } catch (err) {
+                document.getElementById('status').className = 'status error';
+                document.getElementById('status').innerHTML = '<span class="status-dot"></span><span>✗ Database Connection Failed</span>';
+                document.getElementById('movies-container').innerHTML = '<div class="empty-state"><span>😵</span><p>Cannot connect to the server.<br>Make sure the backend is running!</p></div>';
+            }
+        }
+
+        function getGenreEmoji(genre) {
+            const emojis = {
+                'action': '💥', 'sci-fi': '🚀', 'romance': '💕', 'drama': '🎭',
+                'comedy': '😂', 'horror': '👻', 'thriller': '🔪', 'animation': '🎨', 'adventure': '🗺️'
+            };
+            return emojis[(genre || '').toLowerCase()] || '🎬';
+        }
+
+        async function addMovie() {
+            const title = document.getElementById('title').value.trim();
+            const genre = document.getElementById('genre').value.trim();
+            const year = document.getElementById('year').value;
+            const rating = document.getElementById('rating').value;
+
+            if (!title) { alert('Please enter a movie title'); return; }
+
+            await fetch('/api/movies', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title,
+                    genre: genre || 'Drama',
+                    year: parseInt(year) || new Date().getFullYear(),
+                    rating: parseFloat(rating) || 7.0
+                })
+            });
+
+            document.getElementById('title').value = '';
+            document.getElementById('genre').value = '';
+            document.getElementById('year').value = '';
+            document.getElementById('rating').value = '';
+            loadMovies();
+        }
+
+        async function deleteMovie(id) {
+            if (!confirm('Delete this movie?')) return;
+            await fetch('/api/movies/' + id, { method: 'DELETE' });
+            loadMovies();
+        }
+
+        document.querySelectorAll('.form-row input').forEach(input => {
+            input.addEventListener('keypress', e => { if (e.key === 'Enter') addMovie(); });
+        });
+    </script>
+</body>
+</html>
