@@ -132,7 +132,7 @@ After=network.target
 
 [Service]
 Type=simple
-User=ec2-user
+User=ubuntu
 WorkingDirectory=/home/ubuntu/nodejs-movie-app
 ExecStart=/usr/bin/node app.js
 Restart=always
@@ -149,7 +149,7 @@ WantedBy=multi-user.target
 ```bash
 # Create log directory
 sudo mkdir -p /var/log/myapp
-sudo chown ec2-user:ec2-user /var/log/myapp
+sudo chown ubuntu:ubuntu /var/log/myapp
 
 # Reload systemd, enable and start service
 sudo systemctl daemon-reload
