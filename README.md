@@ -133,7 +133,7 @@ After=network.target
 [Service]
 Type=simple
 User=ubuntu
-WorkingDirectory=/home/ubuntu/nodejs-movie-app
+WorkingDirectory=/home/ubuntu/nodejs-movie-app/app-server/
 ExecStart=/usr/bin/node app.js
 Restart=always
 RestartSec=10
