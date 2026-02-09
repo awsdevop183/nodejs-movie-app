@@ -121,7 +121,7 @@ sudo lsof -i :3000
 
 ### Step 1: Create a systemd service file
 ```bash
-sudo nano /etc/systemd/system/myapp.service
+sudo vi /etc/systemd/system/myapp.service
 ```
 
 ### Step 2: Add this configuration
