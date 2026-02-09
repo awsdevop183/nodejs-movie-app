@@ -27,11 +27,17 @@ sudo apt install nodejs -y
 # Copy app files and install
 npm install
 
+
+
+
 # ⚠️ Edit app.js - change DB_HOST to Database Server's PRIVATE IP
-nano app.js
+vi app.js
 
 # Start app
-node app.js
+#node app.js
+
+
+
 ```
 
 **Security Group:** Allow port 3000 from anywhere
@@ -127,7 +133,7 @@ After=network.target
 [Service]
 Type=simple
 User=ec2-user
-WorkingDirectory=/home/ec2-user/your-app-directory
+WorkingDirectory=/home/ubuntu/nodejs-movie-app
 ExecStart=/usr/bin/node app.js
 Restart=always
 RestartSec=10
